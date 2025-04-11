@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Item Generator – Next Quest Studios</title>
+  <link rel="stylesheet" href="css/admin.css" />
+  <script type="module" src="/public/shared/firebaseConfig.js"></script>
+</head>
+<body>
+  <div class="tool-container">
+    <h2>Item Generator</h2>
+
+    <label for="itemName">Item Name:</label>
+    <input type="text" id="itemName" placeholder="Enter item name" />
+
+    <label for="itemType">Item Type:</label>
+    <select id="itemType">
+      <option value="">-- Select Type --</option>
+      <option value="weapon">Weapon</option>
+      <option value="armor">Armor</option>
+      <option value="consumable">Consumable</option>
+      <option value="material">Material</option>
+      <option value="tool">Tool</option>
+      <option value="quest">Quest</option>
+    </select>
+
+    <label for="itemRarity">Rarity:</label>
+    <select id="itemRarity">
+      <option value="common">Common</option>
+      <option value="uncommon">Uncommon</option>
+      <option value="rare">Rare</option>
+      <option value="epic">Epic</option>
+      <option value="legendary">Legendary</option>
+    </select>
+
+    <label for="itemDescription">Description:</label>
+    <textarea id="itemDescription" rows="3" placeholder="Item description..."></textarea>
+
+    <label for="itemStats">Optional Stats (JSON):</label>
+    <textarea id="itemStats" rows="3" placeholder='e.g. {"attack": 5, "defense": 2}'></textarea>
+
+    <button id="saveItemBtn">Save Item</button>
+    <p id="statusMsg"></p>
+  </div>
+
+  <script type="module">
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    const db = getFirestore();
+
+    const saveItemBtn = document.getElementById("saveItemBtn");
+    const statusMsg = document.getElementById("statusMsg");
+
+    saveItemBtn.addEventListener("click", async () => {
+      const name = document.getElementById("itemName").value.trim();
+      const type = document.getElementById("itemType").value;
+      const rarity = document.getElementById("itemRarity").value;
+      const description = document.getElementById("itemDescription").value.trim();
+      const statsInput = document.getElementById("itemStats").value.trim();
+
+      if (!name || !type || !rarity) {
+        statusMsg.textContent = "Item name, type, and rarity are required.";
+        return;
+      }
+
+      let stats = {};
+      try {
+        if (statsInput) stats = JSON.parse(statsInput);
+      } catch {
+        statusMsg.textContent = "Invalid stats format. Use valid JSON.";
+        return;
+      }
+
+      const item = {
+        name,
+        type,
+        rarity,
+        description,
+        stats,
+        createdAt: Date.now()
+      };
+
+      try {
+        await addDoc(collection(db, "items"), item);
+        statusMsg.textContent = "Item saved successfully!";
+      } catch (err) {
+        statusMsg.textContent = "Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
