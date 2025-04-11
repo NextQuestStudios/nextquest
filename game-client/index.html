@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Game Login – Eternal Fall</title>
+  <link rel="stylesheet" href="css/game.css" />
+  <script type="module" src="/public/shared/firebaseConfig.js"></script>
+</head>
+<body>
+  <div class="game-login-container">
+    <h2>Eternal Fall – Admin Login</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+    <p id="errorMsg" class="error"></p>
+  </div>
+
+  <script type="module">
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const auth = getAuth();
+    const db = getFirestore();
+
+    const loginBtn = document.getElementById("loginBtn");
+    const errorMsg = document.getElementById("errorMsg");
+
+    loginBtn.addEventListener("click", async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Get user role from Firestore
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (!userDoc.exists()) {
+          errorMsg.textContent = "User not found in database.";
+          return;
+        }
+
+        const data = userDoc.data();
+        if (data.role === "owner") {
+          window.location.href = "editor.html"; // Go to map editor
+        } else {
+          errorMsg.textContent = "Access denied. This login is for owners only.";
+        }
+      } catch (err) {
+        errorMsg.textContent = "Login failed: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
