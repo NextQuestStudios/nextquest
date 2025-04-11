@@ -5,5 +5,5 @@ document.getElementById("backToTop").addEventListener("click", () => {
 
 // Admin Login Button
 document.getElementById("adminLoginBtn").addEventListener("click", () => {
-  window.location.href = "/admin/login.html";
+  window.location.href = "../admin/login.html";
 });
