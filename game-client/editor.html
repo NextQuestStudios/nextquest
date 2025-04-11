@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Map Editor – Eternal Fall</title>
+  <link rel="stylesheet" href="css/game.css" />
+  <script type="module" src="/public/shared/firebaseConfig.js"></script>
+</head>
+<body>
+  <div id="editorContainer">
+    <!-- Left Toolbar -->
+    <div id="toolbar">
+      <h2>Map Editor</h2>
+
+      <!-- Mode: tile, npc, object -->
+      <label for="modeSelect">Placement Mode:</label>
+      <select id="modeSelect">
+        <option value="tile">Tile</option>
+        <option value="npc">NPC</option>
+        <option value="object">Object</option>
+      </select>
+
+      <!-- Tile Layer Select -->
+      <div id="tileControls">
+        <label for="layerSelect">Layer:</label>
+        <select id="layerSelect">
+          <option value="ground">Ground</option>
+          <option value="object">Object</option>
+          <option value="overlay">Overlay</option>
+        </select>
+
+        <label for="tilePicker">Tile:</label>
+        <input type="file" id="tilePicker" accept="image/png" />
+        <canvas id="tilePreview" width="32" height="32" style="border:1px solid #555; margin-bottom: 10px;"></canvas>
+      </div>
+
+      <!-- NPC / Object Dropdown -->
+      <div id="entityControls" style="display:none;">
+        <label for="entitySelect">Select Entity:</label>
+        <select id="entitySelect">
+          <option value="">Loading...</option>
+        </select>
+        <canvas id="entityPreview" width="32" height="32" style="border:1px solid #555;"></canvas>
+      </div>
+
+      <button id="clearMapBtn">Clear Map</button>
+      <button id="saveMapBtn">Save Map</button>
+    </div>
+
+    <!-- Map Canvas -->
+    <canvas id="mapCanvas" width="1024" height="768"></canvas>
+  </div>
+
+  <script type="module" src="js/map-editor.js"></script>
+</body>
+</html>
