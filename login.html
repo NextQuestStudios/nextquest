@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login – Next Quest Studios</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="module" src="firebase-config.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Admin Panel Login</h1>
+  </header>
+
+  <main>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+    <p id="statusMsg"></p>
+  </main>
+
+  <footer>
+    <p>© 2025 Next Quest Studios</p>
+  </footer>
+
+  <script type="module">
+    import { auth, db } from './firebase-config.js';
+    import {
+      signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+    import {
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+
+    const loginBtn = document.getElementById("loginBtn");
+    const statusMsg = document.getElementById("statusMsg");
+
+    loginBtn.addEventListener("click", async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const uid = userCredential.user.uid;
+
+        const userDoc = await getDoc(doc(db, "users", uid));
+        if (!userDoc.exists()) {
+          statusMsg.textContent = "Account not found.";
+          return;
+        }
+
+        const role = userDoc.data().role;
+        const allowedRoles = ["owner", "co_owner", "admin", "moderator", "map_editor", "sprite_editor"];
+
+        if (!allowedRoles.includes(role)) {
+          statusMsg.textContent = "Access denied: You are not an admin.";
+          return;
+        }
+
+        // Store session info
+        localStorage.setItem("userRole", role);
+        localStorage.setItem("userEmail", email);
+        localStorage.setItem("userUID", uid);
+
+        // Redirect to admin panel
+        window.location.href = "admin.html";
+      } catch (err) {
+        statusMsg.textContent = "Login failed: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
