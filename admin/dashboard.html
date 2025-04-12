@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel – Next Quest Studios</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header>
+    <h1>Admin Dashboard</h1>
+  </header>
+
+  <main>
+    <p id="welcomeMsg">Loading...</p>
+    <div id="tools"></div>
+  </main>
+
+  <footer>
+    <p>© 2025 Next Quest Studios</p>
+  </footer>
+
+  <script type="module">
+    const role = localStorage.getItem("userRole");
+    const email = localStorage.getItem("userEmail");
+
+    const welcomeMsg = document.getElementById("welcomeMsg");
+    const tools = document.getElementById("tools");
+
+    if (!role || !email) {
+      alert("You must be logged in.");
+      window.location.href = "login.html";
+    } else {
+      welcomeMsg.textContent = `Welcome ${email} — Role: ${role}`;
+    }
+
+    const availableTools = {
+      "owner": ["Sprite Editor", "Item Generator", "NPC Creator", "User Manager"],
+      "co_owner": ["Sprite Editor", "Item Generator", "NPC Creator"],
+      "admin": ["Sprite Editor", "Item Generator"],
+      "sprite_editor": ["Sprite Editor", "Item Generator"],
+      "map_editor": ["Map Editor"],
+      "moderator": ["User Manager"]
+    };
+
+    const toolPages = {
+      "Sprite Editor": "tools/sprite-editor.html",
+      "Item Generator": "tools/item-generator.html",
+      "NPC Creator": "tools/npc-creator.html",
+      "Map Editor": "tools/map-editor.html",
+      "User Manager": "tools/user-manager.html"
+    };
+
+    const allowed = availableTools[role] || [];
+
+    allowed.forEach(tool => {
+      const btn = document.createElement("button");
+      btn.textContent = tool;
+      btn.onclick = () => window.location.href = toolPages[tool];
+      btn.style.display = "block";
+      btn.style.margin = "10px auto";
+      tools.appendChild(btn);
+    });
+  </script>
+</body>
+</html>
