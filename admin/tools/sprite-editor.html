@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sprite Editor – Next Quest Studios</title>
+  <link rel="stylesheet" href="../../style.css" />
+  <script type="module" src="../../firebase-config.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Sprite Editor</h1>
+    <button onclick="window.location.href='../dashboard.html'">Back to Dashboard</button>
+  </header>
+
+  <main>
+    <form id="spriteForm">
+      <input type="text" id="spriteName" placeholder="Sprite Name" required />
+      <input type="url" id="spriteURL" placeholder="Sprite Image URL" required />
+      <button type="submit">Save Sprite</button>
+    </form>
+
+    <div id="spriteList">
+      <h2>Saved Sprites</h2>
+      <ul id="sprites"></ul>
+    </div>
+  </main>
+
+  <script type="module">
+    import { db } from '../../firebase-config.js';
+    import {
+      collection,
+      addDoc,
+      getDocs,
+      serverTimestamp
+    } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js';
+
+    const form = document.getElementById('spriteForm');
+    const spriteList = document.getElementById('sprites');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('spriteName').value.trim();
+      const url = document.getElementById('spriteURL').value.trim();
+
+      if (!name || !url) return;
+
+      try {
+        await addDoc(collection(db, 'sprites'), {
+          name,
+          url,
+          createdAt: serverTimestamp()
+        });
+
+        alert("Sprite saved!");
+        form.reset();
+        loadSprites();
+      } catch (err) {
+        alert("Error saving sprite: " + err.message);
+      }
+    });
+
+    async function loadSprites() {
+      spriteList.innerHTML = '';
+      const snapshot = await getDocs(collection(db, 'sprites'));
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${data.name}</strong><br><img src="${data.url}" alt="${data.name}" style="width:64px; height:auto;" />`;
+        spriteList.appendChild(li);
+      });
+    }
+
+    loadSprites();
+  </script>
+</body>
+</html>
