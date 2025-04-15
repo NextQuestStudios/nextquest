@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sign Up - Next Quest Studios</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Next Quest Studios - Sign Up</h1>
+  </header>
+
+  <main>
+    <form id="signupForm">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Create Account</button>
+      <p id="signupMessage"></p>
+    </form>
+    <p>Already have an account? <a href="login.html">Log in here</a></p>
+  </main>
+
+  <script>
+    const form = document.getElementById("signupForm");
+    const msg = document.getElementById("signupMessage");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      try {
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        // Save user to Firestore
+        await firebase.firestore().collection("users").doc(user.uid).set({
+          username: username,
+          email: email,
+          role: "user", // default role
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        msg.textContent = "Account created successfully!";
+        window.location.href = "profile.html"; // redirect
+      } catch (error) {
+        msg.textContent = "Error: " + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
