@@ -2,65 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel – Next Quest Studios</title>
-  <link rel="stylesheet" href="../style.css" />
+  <title>Admin Dashboard - Next Quest Studios</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="admin.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="../firebase-config.js"></script>
+  <script src="admin.js" defer></script>
 </head>
 <body>
   <header>
     <h1>Admin Dashboard</h1>
+    <p id="adminInfo">Loading...</p>
   </header>
 
+  <nav class="tab-menu">
+    <button class="tablink active" onclick="openTab(event, 'overview')">Overview</button>
+    <button class="tablink" onclick="openTab(event, 'tools')">Tools</button>
+    <button class="tablink" onclick="openTab(event, 'users')">Users</button>
+    <button class="tablink" onclick="openTab(event, 'support')">Support</button>
+  </nav>
+
   <main>
-    <p id="welcomeMsg">Loading...</p>
-    <div id="tools"></div>
+    <section id="overview" class="tab-content" style="display: block;">
+      <h2>Quick Stats</h2>
+      <ul>
+        <li>Total Users: <span id="totalUsers">Loading...</span></li>
+        <li>Open Tickets: <span id="openTickets">Loading...</span></li>
+        <li>Total Items: <span id="totalItems">Loading...</span></li>
+        <li>Total NPCs: <span id="totalNPCs">Loading...</span></li>
+      </ul>
+    </section>
+
+    <section id="tools" class="tab-content">
+      <h2>Admin Tools</h2>
+      <div class="tool-buttons">
+        <a href="tools/sprite-editor.html">Sprite Editor</a>
+        <a href="tools/item-generator.html">Item Generator</a>
+        <a href="tools/npc-editor.html">NPC Editor</a>
+        <a href="tools/quest-builder.html">Quest Builder</a>
+        <a href="tools/shop-creator.html">Shop Creator</a>
+        <a href="tools/map-editor.html">Map Editor</a>
+        <a href="tools/event-creator.html">Event Creator</a>
+      </div>
+    </section>
+
+    <section id="users" class="tab-content">
+      <h2>User Management</h2>
+      <p>Go to <a href="tools/user-manager.html">User Role Manager</a> to manage accounts, roles, and bans.</p>
+    </section>
+
+    <section id="support" class="tab-content">
+      <h2>Support Tickets</h2>
+      <p>View and reply to tickets in the <a href="tools/support-manager.html">Support Ticket Manager</a>.</p>
+    </section>
   </main>
-
-  <footer>
-    <p>© 2025 Next Quest Studios</p>
-  </footer>
-
-  <script type="module">
-    const role = localStorage.getItem("userRole");
-    const email = localStorage.getItem("userEmail");
-
-    const welcomeMsg = document.getElementById("welcomeMsg");
-    const tools = document.getElementById("tools");
-
-    if (!role || !email) {
-      alert("You must be logged in.");
-      window.location.href = "login.html";
-    } else {
-      welcomeMsg.textContent = `Welcome ${email} — Role: ${role}`;
-    }
-
-    const availableTools = {
-      "owner": ["Sprite Editor", "Item Generator", "NPC Creator", "User Manager"],
-      "co_owner": ["Sprite Editor", "Item Generator", "NPC Creator"],
-      "admin": ["Sprite Editor", "Item Generator"],
-      "sprite_editor": ["Sprite Editor", "Item Generator"],
-      "map_editor": ["Map Editor"],
-      "moderator": ["User Manager"]
-    };
-
-    const toolPages = {
-      "Sprite Editor": "tools/sprite-editor.html",
-      "Item Generator": "tools/item-generator.html",
-      "NPC Creator": "tools/npc-creator.html",
-      "Map Editor": "tools/map-editor.html",
-      "User Manager": "tools/user-manager.html"
-    };
-
-    const allowed = availableTools[role] || [];
-
-    allowed.forEach(tool => {
-      const btn = document.createElement("button");
-      btn.textContent = tool;
-      btn.onclick = () => window.location.href = toolPages[tool];
-      btn.style.display = "block";
-      btn.style.margin = "10px auto";
-      tools.appendChild(btn);
-    });
-  </script>
 </body>
 </html>
