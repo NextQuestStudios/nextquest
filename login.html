@@ -2,47 +2,58 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login - Next Quest Studios</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Next Quest Studios - Login</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-  <script src="firebase-config.js"></script>
 </head>
 <body>
-  <header>
+  <div class="container">
     <h1>Next Quest Studios - Login</h1>
-  </header>
-
-  <main>
-    <form id="loginForm">
+    <form id="login-form">
       <input type="email" id="email" placeholder="Email" required />
       <input type="password" id="password" placeholder="Password" required />
       <button type="submit">Login</button>
-      <p id="loginMessage"></p>
     </form>
-    <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
-  </main>
+    <p>
+      Don't have an account? <a href="signup.html">Sign up here</a>
+    </p>
+    <p id="error-message" style="color: red;"></p>
+  </div>
 
+  <!-- Firebase SDKs (compat versions) -->
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-auth-compat.js"></script>
+
+  <!-- Firebase config and init -->
   <script>
-    const form = document.getElementById("loginForm");
-    const msg = document.getElementById("loginMessage");
+    const firebaseConfig = {
+      apiKey: "AIzaSyDvL4-Mu7wkXdV15hSgh2LCK2nZ1_pk6zQ",
+      authDomain: "nextqueststudio.firebaseapp.com",
+      projectId: "nextqueststudio",
+      storageBucket: "nextqueststudio.appspot.com",
+      messagingSenderId: "299726625043",
+      appId: "1:299726625043:web:849a5ef49be102603f22e6"
+    };
 
-    form.addEventListener("submit", async (e) => {
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+  </script>
+
+  <!-- Login logic -->
+  <script>
+    document.getElementById("login-form").addEventListener("submit", function (e) {
       e.preventDefault();
-      const email = document.getElementById("email").value.trim();
+      const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      try {
-        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-
-        msg.textContent = "Login successful!";
-        window.location.href = "profile.html"; // Redirect to profile or dashboard
-      } catch (error) {
-        msg.textContent = "Error: " + error.message;
-      }
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          window.location.href = "/admin/dashboard.html"; // Redirect after login
+        })
+        .catch((error) => {
+          document.getElementById("error-message").innerText = error.message;
+        });
     });
   </script>
 </body>
