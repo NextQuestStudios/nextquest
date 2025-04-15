@@ -48,8 +48,8 @@
 
       auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-          const user = userCredential.user;
-          window.location.href = "index.html"; // Redirect after login
+          // Redirect to homepage
+          window.location.href = "index.html";
         })
         .catch((error) => {
           document.getElementById("error-message").innerText = error.message;
