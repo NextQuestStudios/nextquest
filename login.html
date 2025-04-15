@@ -2,71 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Login – Next Quest Studios</title>
+  <title>Login - Next Quest Studios</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
-  <script type="module" src="firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
 </head>
 <body>
   <header>
-    <h1>Admin Panel Login</h1>
+    <h1>Next Quest Studios - Login</h1>
   </header>
 
   <main>
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
-    <button id="loginBtn">Login</button>
-    <p id="statusMsg"></p>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+      <p id="loginMessage"></p>
+    </form>
+    <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
   </main>
 
-  <footer>
-    <p>© 2025 Next Quest Studios</p>
-  </footer>
+  <script>
+    const form = document.getElementById("loginForm");
+    const msg = document.getElementById("loginMessage");
 
-  <script type="module">
-    import { auth, db } from './firebase-config.js';
-    import {
-      signInWithEmailAndPassword
-    } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
-    import {
-      doc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
-
-    const loginBtn = document.getElementById("loginBtn");
-    const statusMsg = document.getElementById("statusMsg");
-
-    loginBtn.addEventListener("click", async () => {
-      const email = document.getElementById("email").value;
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
 
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const uid = userCredential.user.uid;
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
 
-        const userDoc = await getDoc(doc(db, "users", uid));
-        if (!userDoc.exists()) {
-          statusMsg.textContent = "Account not found.";
-          return;
-        }
-
-        const role = userDoc.data().role;
-        const allowedRoles = ["owner", "co_owner", "admin", "moderator", "map_editor", "sprite_editor"];
-
-        if (!allowedRoles.includes(role)) {
-          statusMsg.textContent = "Access denied: You are not an admin.";
-          return;
-        }
-
-        // Store session info
-        localStorage.setItem("userRole", role);
-        localStorage.setItem("userEmail", email);
-        localStorage.setItem("userUID", uid);
-
-        // Redirect to admin panel
-        window.location.href = "admin.html";
-      } catch (err) {
-        statusMsg.textContent = "Login failed: " + err.message;
+        msg.textContent = "Login successful!";
+        window.location.href = "profile.html"; // Redirect to profile or dashboard
+      } catch (error) {
+        msg.textContent = "Error: " + error.message;
       }
     });
   </script>
